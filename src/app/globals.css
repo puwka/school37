@@ -1,26 +1,284 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────
+   Design system: «Кирпич и бумага» — СОШ №37
+   Official school UI: paper, ink, brick accent
+   ───────────────────────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --paper: #f7f5f0;
+  --paper-muted: #f0ede6;
+  --surface: #ffffff;
+  --ink: #1a1a18;
+  --graphite: #4a4a46;
+  --muted: #6b6860;
+  --line: #e3e0d8;
+  --line-strong: #cfcabe;
+
+  /* Accent — brick of the 1963 building */
+  --brick: #9b3d32;
+  --brick-hover: #7a2f26;
+  --brick-tint: #f3ebea;
+
+  /* Semantic */
+  --success: #2f6b4f;
+  --success-tint: #e8f1ec;
+  --warning: #8a6a1e;
+  --warning-tint: #f5efd9;
+  --danger: #9b3d32;
+  --danger-tint: #f3ebea;
+
+  /* Layout */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --content: 1120px;
+  --prose: 720px;
+  --header-h: 64px;
+  --utility-h: 40px;
+
+  /* Shadows — almost none */
+  --shadow-xs: 0 1px 2px rgb(26 26 24 / 0.04);
+  --shadow-sm: 0 1px 3px rgb(26 26 24 / 0.06);
+
+  --background: var(--paper);
+  --foreground: var(--ink);
 }
 
 @theme inline {
+  --color-paper: var(--paper);
+  --color-paper-muted: var(--paper-muted);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-graphite: var(--graphite);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-brick: var(--brick);
+  --color-brick-hover: var(--brick-hover);
+  --color-brick-tint: var(--brick-tint);
+  --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
+  --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
+  --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --font-serif: var(--font-literata), "Georgia", serif;
+  --font-sans: var(--font-golos), system-ui, sans-serif;
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+
+  --spacing-content: var(--content);
+  --spacing-prose: var(--prose);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  img,
+  video,
+  svg,
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+
+  table {
+    max-width: 100%;
+  }
+
+  .visually-impaired {
+    font-size: 120% !important;
+    letter-spacing: 0.02em;
+  }
+
+  .visually-impaired body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  h1 {
+    font-size: clamp(1.75rem, 2.5vw, 2.5rem);
+  }
+
+  h2 {
+    font-size: clamp(1.375rem, 2vw, 1.75rem);
+  }
+
+  h3 {
+    font-size: clamp(1.125rem, 1.5vw, 1.25rem);
+  }
+
+  a {
+    color: inherit;
+    text-underline-offset: 3px;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brick);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--brick-tint);
+    color: var(--ink);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@layer utilities {
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+
+  .container-site {
+    width: 100%;
+    max-width: var(--content);
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 1.5rem);
+  }
+
+  .container-prose {
+    width: 100%;
+    max-width: var(--prose);
+  }
+
+  /* Accent brick bar — marks important official blocks */
+  .accent-bar {
+    border-left: 4px solid var(--brick);
+  }
+
+  .section-num::before {
+    content: attr(data-num);
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .animate-accordion-down {
+    animation: accordion-down 150ms ease-out;
+  }
+
+  .animate-accordion-up {
+    animation: accordion-up 150ms ease-out;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -100px;
+    z-index: 100;
+    background: var(--surface);
+    color: var(--ink);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--line);
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    top: 1rem;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .focus\:not-sr-only:focus,
+  .focus\:not-sr-only:focus-visible {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
 }
