@@ -3,19 +3,21 @@ import { redirect } from "next/navigation";
 import { count } from "drizzle-orm";
 import { AdminChrome } from "@/components/admin/admin-chrome";
 import { db } from "@/db";
-import { documents, employees, news, pages } from "@/db/schema";
+import { documents, applications, employees, news, pages } from "@/db/schema";
 import { getSession } from "@/server/auth";
+import { countNewApplicationsAdmin } from "@/server/crud";
 
 export default async function AdminDashboardPage() {
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
-  const [[pagesCount], [newsCount], [docsCount], [staffCount]] =
+  const [[pagesCount], [newsCount], [docsCount], [staffCount], newAppsCount] =
     await Promise.all([
       db.select({ value: count() }).from(pages),
       db.select({ value: count() }).from(news),
       db.select({ value: count() }).from(documents),
       db.select({ value: count() }).from(employees),
+      countNewApplicationsAdmin(),
     ]);
 
   const cards = [
@@ -42,6 +44,12 @@ export default async function AdminDashboardPage() {
       count: staffCount.value,
       href: "/admin/employees",
       hint: "Педагогический состав",
+    },
+    {
+      title: "Заявки",
+      count: newAppsCount,
+      href: "/admin/applications",
+      hint: "Новые заявки с сайта",
     },
   ];
 

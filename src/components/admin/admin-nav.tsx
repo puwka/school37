@@ -10,6 +10,7 @@ const links = [
   { href: "/admin/news", label: "Новости" },
   { href: "/admin/documents", label: "Документы" },
   { href: "/admin/employees", label: "Сотрудники" },
+  { href: "/admin/applications", label: "Заявки" },
   { href: "/admin/migration", label: "Перенос" },
 ];
 

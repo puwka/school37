@@ -413,4 +413,37 @@ export const auditListSchema = paginationSchema.extend({
   action: z.enum(["create", "update", "delete", "publish", "login", "logout"]).optional(),
 });
 
+const phoneSchema = z
+  .string()
+  .trim()
+  .min(10, "Укажите номер телефона")
+  .max(32)
+  .regex(/^[\d\s+()-]+$/, "Некорректный номер телефона");
+
+export const applicationStatusSchema = z.enum([
+  "new",
+  "in_review",
+  "processed",
+  "rejected",
+]);
+
+export const applicationSubmitSchema = z.object({
+  applicantName: z.string().trim().min(2, "Укажите ФИО").max(255),
+  classGrade: z.coerce.number().int().min(1).max(11),
+  classLetter: z
+    .string()
+    .trim()
+    .min(1, "Укажите букву класса")
+    .max(8)
+    .transform((v) => v.toUpperCase()),
+  phone: phoneSchema,
+  childName: z.string().trim().min(2, "Укажите ФИО ребёнка").max(255),
+  website: z.string().max(0).optional(),
+});
+
+export const applicationUpdateSchema = z.object({
+  status: applicationStatusSchema,
+  adminNotes: z.string().max(5000).optional().nullable(),
+});
+
 export type PaginationInput = z.infer<typeof paginationSchema>;

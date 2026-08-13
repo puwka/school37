@@ -1,8 +1,9 @@
-import { and, asc, count, desc, eq, ilike, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, ilike, or } from "drizzle-orm";
 import type { AnyPgTable } from "drizzle-orm/pg-core";
 import { db } from "@/db";
 import {
   auditLogs,
+  applications,
   categories,
   documents,
   employees,
@@ -28,6 +29,7 @@ import {
   isForeignKeyViolation,
   isUniqueViolation,
   notFound,
+  tooMany,
 } from "@/server/errors";
 import {
   categoryCreateSchema,
@@ -36,6 +38,8 @@ import {
   documentUpdateSchema,
   employeeCreateSchema,
   employeeUpdateSchema,
+  applicationSubmitSchema,
+  applicationUpdateSchema,
   mediaCreateSchema,
   mediaUpdateSchema,
   menuItemCreateSchema,
@@ -1090,4 +1094,135 @@ export async function getAuditLog(id: string) {
   const [row] = await db.select().from(auditLogs).where(eq(auditLogs.id, id));
   if (!row) throw notFound("Запись журнала не найдена");
   return row;
+}
+
+function normalizePhone(phone: string) {
+  return phone.replace(/\D/g, "");
+}
+
+export async function submitApplication(input: unknown) {
+  const data = parse(applicationSubmitSchema, input);
+  if (data.website) {
+    throw badRequest("Не удалось отправить заявку");
+  }
+
+  const phone = normalizePhone(data.phone);
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+  const [recent] = await db
+    .select({ id: applications.id })
+    .from(applications)
+    .where(
+      and(eq(applications.phone, phone), gt(applications.createdAt, fiveMinutesAgo)),
+    )
+    .limit(1);
+  if (recent) {
+    throw tooMany("Заявка уже отправлена. Подождите несколько минут.");
+  }
+
+  const [row] = await wrapDb(() =>
+    db
+      .insert(applications)
+      .values({
+        applicantName: data.applicantName,
+        classGrade: data.classGrade,
+        classLetter: data.classLetter,
+        phone,
+        childName: data.childName,
+        status: "new",
+      })
+      .returning(),
+  );
+
+  await writeAudit({
+    action: "create",
+    entityType: "applications",
+    entityId: row.id,
+    diff: pickDiff(null, {
+      childName: row.childName,
+      classGrade: row.classGrade,
+      classLetter: row.classLetter,
+    }),
+  });
+
+  return row;
+}
+
+export async function listApplicationsAdmin(input: unknown) {
+  return listTable({
+    table: applications,
+    searchable: ["applicantName", "childName", "phone"],
+    orderBy: desc(applications.createdAt),
+    input,
+  });
+}
+
+export async function countNewApplicationsAdmin() {
+  await requireRole("viewer");
+  const [row] = await db
+    .select({ value: count() })
+    .from(applications)
+    .where(eq(applications.status, "new"));
+  return row.value;
+}
+
+export async function getApplicationAdmin(id: string) {
+  await requireRole("viewer");
+  const [row] = await db.select().from(applications).where(eq(applications.id, id));
+  if (!row) throw notFound("Заявка не найдена");
+  return row;
+}
+
+export async function updateApplication(id: string, input: unknown) {
+  const actor = await requireWrite("editor");
+  const data = parse(applicationUpdateSchema, input);
+  const [before] = await db.select().from(applications).where(eq(applications.id, id));
+  if (!before) throw notFound("Заявка не найдена");
+
+  const processedAt =
+    data.status === "processed" || data.status === "rejected"
+      ? new Date()
+      : before.processedAt;
+
+  const [row] = await wrapDb(() =>
+    db
+      .update(applications)
+      .set({
+        status: data.status,
+        adminNotes: data.adminNotes ?? before.adminNotes,
+        processedById:
+          data.status === "processed" || data.status === "rejected"
+            ? actor.id
+            : before.processedById,
+        processedAt,
+        updatedAt: now(),
+      })
+      .where(eq(applications.id, id))
+      .returning(),
+  );
+
+  await writeAudit({
+    user: actor,
+    action: "update",
+    entityType: "applications",
+    entityId: id,
+    diff: pickDiff(
+      { status: before.status, adminNotes: before.adminNotes },
+      { status: row.status, adminNotes: row.adminNotes },
+    ),
+  });
+
+  return row;
+}
+
+export async function deleteApplication(id: string) {
+  const actor = await requireWrite("editor");
+  const [row] = await db.delete(applications).where(eq(applications.id, id)).returning();
+  if (!row) throw notFound("Заявка не найдена");
+  await writeAudit({
+    user: actor,
+    action: "delete",
+    entityType: "applications",
+    entityId: id,
+  });
+  return { id };
 }

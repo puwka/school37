@@ -106,6 +106,7 @@ export default async function HomePage() {
               <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[15px]">
                 <TextLink href="/o-shkole/">О школе</TextLink>
                 <TextLink href="/roditelyam/priem/">Поступление</TextLink>
+                <TextLink href="/roditelyam/zayavka/">Заявка в школу</TextLink>
                 <TextLink href="/svedeniya/dokumenty/">Документы</TextLink>
               </div>
             </div>

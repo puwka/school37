@@ -301,3 +301,25 @@ export async function uploadStaffPhotoAction(formData: FormData) {
     return fail(error);
   }
 }
+
+export async function submitApplicationAction(input: unknown) {
+  try {
+    const data = await crud.submitApplication(input);
+    return ok(data);
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+export async function listApplicationsAction(input?: unknown) {
+  return wrap(() => crud.listApplicationsAdmin(input));
+}
+export async function getApplicationAction(id: string) {
+  return wrap(() => crud.getApplicationAdmin(id));
+}
+export async function updateApplicationAction(id: string, input: unknown) {
+  return wrap(() => crud.updateApplication(id, input));
+}
+export async function deleteApplicationAction(id: string) {
+  return wrap(() => crud.deleteApplication(id));
+}

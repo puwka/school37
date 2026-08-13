@@ -32,6 +32,7 @@ export const mainNav: NavItem[] = [
     href: "/roditelyam/",
     children: [
       { label: "Поступление", href: "/roditelyam/priem/" },
+      { label: "Заявка в школу", href: "/roditelyam/zayavka/" },
       { label: "Расписание", href: "/roditelyam/raspisanie/" },
       { label: "Каникулы", href: "/roditelyam/kanikuly/" },
       { label: "Питание", href: "/svedeniya/pitanie/" },
@@ -103,6 +104,7 @@ export const pedagogamNav: SidebarItem[] = [
 
 export const roditelyamNav: SidebarItem[] = [
   { label: "Поступление", href: "/roditelyam/priem/" },
+  { label: "Заявка в школу", href: "/roditelyam/zayavka/" },
   { label: "Расписание", href: "/roditelyam/raspisanie/" },
   { label: "Каникулы", href: "/roditelyam/kanikuly/" },
   { label: "Питание", href: "/svedeniya/pitanie/" },
@@ -119,6 +121,7 @@ export const roditelyamNav: SidebarItem[] = [
 
 export const quickActions = [
   { label: "Поступление", href: "/roditelyam/priem/" },
+  { label: "Заявка в школу", href: "/roditelyam/zayavka/" },
   { label: "Расписание", href: "/roditelyam/raspisanie/" },
   { label: "Питание", href: "/svedeniya/pitanie/" },
   { label: "Документы", href: "/svedeniya/dokumenty/" },

@@ -85,6 +85,13 @@ export const auditActionEnum = pgEnum("audit_action", [
   "logout",
 ]);
 
+export const applicationStatusEnum = pgEnum("application_status", [
+  "new",
+  "in_review",
+  "processed",
+  "rejected",
+]);
+
 export const users = pgTable(
   "users",
   {
@@ -380,6 +387,30 @@ export const redirects = pgTable(
   ],
 );
 
+export const applications = pgTable(
+  "applications",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    applicantName: varchar("applicant_name", { length: 255 }).notNull(),
+    classGrade: integer("class_grade").notNull(),
+    classLetter: varchar("class_letter", { length: 8 }).notNull(),
+    phone: varchar("phone", { length: 32 }).notNull(),
+    childName: varchar("child_name", { length: 255 }).notNull(),
+    status: applicationStatusEnum("status").notNull().default("new"),
+    adminNotes: text("admin_notes"),
+    processedById: uuid("processed_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    processedAt: timestamp("processed_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (t) => [
+    index("applications_status_idx").on(t.status),
+    index("applications_created_idx").on(t.createdAt),
+    index("applications_phone_idx").on(t.phone),
+  ],
+);
+
 export const auditLogs = pgTable(
   "audit_logs",
   {
@@ -528,6 +559,13 @@ export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
   }),
 }));
 
+export const applicationsRelations = relations(applications, ({ one }) => ({
+  processedBy: one(users, {
+    fields: [applications.processedById],
+    references: [users.id],
+  }),
+}));
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Page = typeof pages.$inferSelect;
@@ -541,3 +579,4 @@ export type Media = typeof media.$inferSelect;
 export type Setting = typeof settings.$inferSelect;
 export type Redirect = typeof redirects.$inferSelect;
 export type AuditLog = typeof auditLogs.$inferSelect;
+export type Application = typeof applications.$inferSelect;
