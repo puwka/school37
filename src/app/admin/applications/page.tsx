@@ -5,7 +5,7 @@ import {
   applicationStatusLabel,
   formatApplicationClass,
   formatApplicationDate,
-} from "@/components/admin/application-editor";
+} from "@/lib/applications";
 import type { Application } from "@/db/schema";
 import { getSession } from "@/server/auth";
 import { listApplicationsAdmin } from "@/server/crud";

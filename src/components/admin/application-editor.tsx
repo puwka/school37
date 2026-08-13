@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FormStatus } from "@/components/admin/form-status";
+import { formatApplicationDate } from "@/lib/applications";
 import {
   deleteApplicationAction,
   updateApplicationAction,
@@ -40,13 +41,6 @@ function formatPhone(phone: string) {
     return `+7 (${phone.slice(1, 4)}) ${phone.slice(4, 7)}-${phone.slice(7, 9)}-${phone.slice(9)}`;
   }
   return phone;
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("ru-RU", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
 }
 
 export function ApplicationEditor({ initial }: { initial: ApplicationData }) {
@@ -117,7 +111,9 @@ export function ApplicationEditor({ initial }: { initial: ApplicationData }) {
         </div>
         <div className="sm:col-span-2">
           <dt className="text-sm text-muted">Получена</dt>
-          <dd className="mt-1 text-graphite">{formatDate(initial.createdAt)}</dd>
+          <dd className="mt-1 text-graphite">
+            {formatApplicationDate(initial.createdAt)}
+          </dd>
         </div>
       </dl>
 
@@ -166,23 +162,4 @@ export function ApplicationEditor({ initial }: { initial: ApplicationData }) {
       </div>
     </div>
   );
-}
-
-export function applicationStatusLabel(status: string) {
-  if (status === "new") return "Новая";
-  if (status === "in_review") return "В работе";
-  if (status === "processed") return "Обработана";
-  if (status === "rejected") return "Отклонена";
-  return status;
-}
-
-export function formatApplicationClass(grade: number, letter: string) {
-  return `${grade}${letter}`;
-}
-
-export function formatApplicationDate(value: Date | string) {
-  return new Intl.DateTimeFormat("ru-RU", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
 }
