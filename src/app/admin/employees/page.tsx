@@ -15,7 +15,7 @@ export default async function AdminEmployeesPage() {
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
-  const result = await listEmployeesAdmin({ page: 1, perPage: 200 });
+  const result = await listEmployeesAdmin({ page: 1, perPage: 100 });
   const items = result.items as Employee[];
 
   return (

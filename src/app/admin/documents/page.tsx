@@ -15,7 +15,7 @@ export default async function AdminDocumentsPage() {
   const session = await getSession();
   if (!session) redirect("/admin/login");
 
-  const result = await listDocumentsAdmin({ page: 1, perPage: 200 });
+  const result = await listDocumentsAdmin({ page: 1, perPage: 100 });
   const items = result.items as Document[];
 
   return (
