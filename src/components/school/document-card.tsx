@@ -1,8 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
-import { FileText, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 
 export type DocumentCardProps = {
   title: string;
@@ -15,10 +14,15 @@ export type DocumentCardProps = {
   className?: string;
 };
 
-/**
- * Строка реестра документов — не плитка с обложкой.
- * Сканирование длинных списков важнее «карточного» вида.
- */
+function fileKind(href?: string, sizeLabel?: string) {
+  const ext = href?.split(".").pop()?.toUpperCase();
+  if (ext && ["PDF", "DOC", "DOCX", "XLS", "XLSX", "RTF"].includes(ext)) {
+    return ext === "DOCX" ? "DOC" : ext === "XLSX" ? "XLS" : ext;
+  }
+  if (sizeLabel?.toLowerCase().includes("pdf")) return "PDF";
+  return "ФАЙЛ";
+}
+
 function DocumentRow({
   title,
   href,
@@ -29,31 +33,33 @@ function DocumentRow({
   signed,
   className,
 }: DocumentCardProps) {
+  const kind = fileKind(href, sizeLabel);
   const meta = [date, sizeLabel].filter(Boolean).join(" · ");
+
   const inner = (
     <>
-      <FileText
-        className="mt-0.5 size-5 shrink-0 text-graphite group-hover:text-brick"
+      <div
+        className="mt-0.5 flex size-10 shrink-0 items-center justify-center border border-line bg-paper-muted font-sans text-[10px] font-semibold tracking-[0.06em] text-pine transition-colors duration-150 group-hover:border-brick group-hover:text-brick"
         aria-hidden
-      />
+      >
+        {kind}
+      </div>
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          {category ? <Badge variant="outline">{category}</Badge> : null}
-          {signed ? <Badge variant="success">ЭП</Badge> : null}
-          {!downloadable ? (
-            <Badge variant="default">Файл готовится</Badge>
-          ) : null}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium uppercase tracking-[0.08em]">
+          {category ? <span className="text-muted">{category}</span> : null}
+          {signed ? <span className="text-success">ЭП</span> : null}
+          {!downloadable ? <span className="text-warning">Готовится</span> : null}
         </div>
-        <p className="mt-1 font-sans text-[15px] font-medium text-ink group-hover:text-brick">
+        <p className="mt-1.5 font-sans text-[15px] font-medium leading-snug tracking-[-0.01em] text-ink transition-colors duration-150 group-hover:text-brick">
           {title}
         </p>
-        {meta ? <p className="mt-0.5 text-sm text-graphite">{meta}</p> : null}
+        {meta ? <p className="mt-1 text-[13px] text-graphite">{meta}</p> : null}
       </div>
       {downloadable && href ? (
-        <span className="mt-1 inline-flex shrink-0 items-center gap-1 text-sm text-graphite group-hover:text-brick">
+        <span className="mt-1 inline-flex shrink-0 items-center gap-1.5 text-[13px] font-medium text-graphite transition-colors duration-150 group-hover:text-brick">
           <Download className="size-3.5" aria-hidden />
-          <span className="hidden sm:inline">Скачать</span>
-          <span className="sr-only sm:hidden">Скачать</span>
+          <span className="hidden sm:inline">Открыть</span>
+          <span className="sr-only sm:hidden">Открыть</span>
         </span>
       ) : null}
     </>
@@ -66,7 +72,7 @@ function DocumentRow({
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
-          "group flex items-start gap-3 border-b border-line py-3.5 no-underline transition-colors last:border-b-0 hover:bg-paper-muted/60",
+          "group flex items-start gap-4 border-b border-line py-4 no-underline transition-colors duration-150 last:border-b-0 hover:bg-surface/70",
           className,
         )}
       >
@@ -78,7 +84,7 @@ function DocumentRow({
   return (
     <div
       className={cn(
-        "group flex items-start gap-3 border-b border-line py-3.5 last:border-b-0",
+        "group flex items-start gap-4 border-b border-line py-4 last:border-b-0",
         className,
       )}
     >
@@ -87,9 +93,6 @@ function DocumentRow({
   );
 }
 
-/**
- * Компактная карточка документа для боковых блоков (не для реестра).
- */
 function DocumentTile({
   title,
   href,
@@ -99,20 +102,21 @@ function DocumentTile({
 }: DocumentCardProps) {
   const body = (
     <>
-      {category ? <Badge variant="default">{category}</Badge> : null}
-      <p className="mt-2 font-sans text-[15px] font-medium text-ink">{title}</p>
+      {category ? (
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
+          {category}
+        </p>
+      ) : null}
+      <p className="mt-2 font-sans text-[15px] font-medium tracking-[-0.01em] text-ink">
+        {title}
+      </p>
       {date ? <p className="mt-1 text-sm text-graphite">{date}</p> : null}
     </>
   );
 
   if (!href) {
     return (
-      <div
-        className={cn(
-          "block rounded-[var(--radius-md)] border border-line bg-surface p-4",
-          className,
-        )}
-      >
+      <div className={cn("block border border-line bg-surface p-4", className)}>
         {body}
       </div>
     );
@@ -122,7 +126,7 @@ function DocumentTile({
     <Link
       href={href}
       className={cn(
-        "block rounded-[var(--radius-md)] border border-line bg-surface p-4 no-underline transition-colors hover:border-line-strong",
+        "block border border-line bg-surface p-4 no-underline transition-colors duration-150 hover:border-line-strong",
         className,
       )}
     >

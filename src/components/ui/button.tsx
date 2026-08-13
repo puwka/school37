@@ -8,14 +8,14 @@ import { cn } from "@/lib/utils";
  * radius 4px, один brick primary, без pill и glow.
  */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-sans text-[15px] font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-45 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-sans text-[15px] font-medium tracking-[-0.01em] transition-[color,background-color,border-color,transform] duration-150 ease-out disabled:pointer-events-none disabled:opacity-45 active:translate-y-px [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         primary:
           "bg-brick text-white hover:bg-brick-hover focus-visible:outline-brick",
         secondary:
-          "border border-ink bg-transparent text-ink hover:bg-paper-muted",
+          "border border-ink/80 bg-transparent text-ink hover:bg-paper-muted",
         ghost:
           "bg-transparent text-ink hover:bg-paper-muted",
         link:
@@ -24,10 +24,10 @@ const buttonVariants = cva(
           "bg-brick-tint text-brick hover:bg-brick hover:text-white",
       },
       size: {
-        sm: "h-9 rounded-[var(--radius-sm)] px-3 text-sm",
+        sm: "h-9 rounded-[var(--radius-sm)] px-3.5 text-sm",
         md: "h-11 rounded-[var(--radius-sm)] px-5",
         lg: "h-12 rounded-[var(--radius-sm)] px-6 text-base",
-        icon: "size-11 rounded-[var(--radius-sm)]",
+        icon: "size-10 rounded-[var(--radius-sm)] sm:size-11",
       },
     },
     defaultVariants: {

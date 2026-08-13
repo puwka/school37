@@ -11,41 +11,41 @@ export function SiteFooter({
   more: { label: string; href: string }[];
 }) {
   return (
-    <footer className="mt-auto border-t border-line bg-paper-muted">
-      <div className="container-site grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
+    <footer className="mt-auto border-t border-line bg-pine text-white">
+      <div className="container-site grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="min-w-0">
-          <p className="font-serif text-lg font-semibold text-ink">
+          <p className="font-serif text-xl font-semibold tracking-[-0.03em]">
             {school.brandName}
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-graphite">
+          <p className="mt-4 text-sm leading-relaxed text-white/70">
             {school.address.full}
           </p>
-          <p className="mt-3 text-sm text-ink">
-            <a href={`tel:${school.phoneTel}`} className="hover:text-brick">
+          <p className="mt-4 text-sm">
+            <a href={`tel:${school.phoneTel}`} className="text-white hover:text-white/80">
               {school.phone}
             </a>
           </p>
           <p className="mt-1 text-sm">
             <a
               href={`mailto:${school.email}`}
-              className="break-all text-ink hover:text-brick"
+              className="break-all text-white/80 hover:text-white"
             >
               {school.email}
             </a>
           </p>
-          <p className="mt-3 text-sm text-graphite">{school.workHours}</p>
+          <p className="mt-3 text-sm text-white/55">{school.workHours}</p>
         </div>
 
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.04em] text-muted">
+          <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-white/45">
             Официально
           </p>
-          <ul className="mt-3 space-y-2 text-sm">
+          <ul className="mt-4 space-y-2.5 text-sm">
             {official.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="text-ink no-underline hover:text-brick"
+                  className="text-white/80 no-underline transition-colors hover:text-white"
                 >
                   {item.label}
                 </Link>
@@ -55,15 +55,15 @@ export function SiteFooter({
         </div>
 
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.04em] text-muted">
+          <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-white/45">
             Ещё
           </p>
-          <ul className="mt-3 space-y-2 text-sm">
+          <ul className="mt-4 space-y-2.5 text-sm">
             {more.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="text-ink no-underline hover:text-brick"
+                  className="text-white/80 no-underline transition-colors hover:text-white"
                 >
                   {item.label}
                 </Link>
@@ -73,14 +73,14 @@ export function SiteFooter({
         </div>
 
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.04em] text-muted">
+          <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-white/45">
             Ссылки
           </p>
-          <ul className="mt-3 space-y-2 text-sm">
+          <ul className="mt-4 space-y-2.5 text-sm">
             <li>
               <a
                 href={school.founder.site}
-                className="text-ink no-underline hover:text-brick"
+                className="text-white/80 no-underline transition-colors hover:text-white"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -90,7 +90,7 @@ export function SiteFooter({
             <li>
               <a
                 href={school.external.minpros}
-                className="text-ink no-underline hover:text-brick"
+                className="text-white/80 no-underline transition-colors hover:text-white"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -100,7 +100,7 @@ export function SiteFooter({
             <li>
               <a
                 href={school.external.obrnadzor}
-                className="text-ink no-underline hover:text-brick"
+                className="text-white/80 no-underline transition-colors hover:text-white"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -110,45 +110,22 @@ export function SiteFooter({
             <li>
               <a
                 href={school.enrollmentUrl}
-                className="text-ink no-underline hover:text-brick"
+                className="text-white/80 no-underline transition-colors hover:text-white"
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 Госуслуги — запись в школу
               </a>
             </li>
-            <li className="flex gap-4 pt-1">
-              {school.social.vk ? (
-                <a
-                  href={school.social.vk}
-                  className="text-graphite no-underline hover:text-brick"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  VK
-                </a>
-              ) : null}
-              {school.social.ok ? (
-                <a
-                  href={school.social.ok}
-                  className="text-graphite no-underline hover:text-brick"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  OK
-                </a>
-              ) : null}
-            </li>
           </ul>
         </div>
       </div>
 
-      <div className="border-t border-line">
-        <div className="container-site flex flex-col gap-2 py-4 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-white/10">
+        <div className="container-site flex flex-col gap-2 py-4 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {school.shortName}</p>
           <p>
-            Сайт использует Яндекс Метрику.{" "}
-            <Link href="/policy/" className="text-graphite hover:text-brick">
+            <Link href="/policy/" className="text-white/55 hover:text-white">
               Политика обработки персональных данных
             </Link>
           </p>

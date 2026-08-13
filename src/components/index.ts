@@ -50,7 +50,12 @@ export { Search } from "@/components/ui/search";
 export { SiteHeader, QuickNav } from "@/components/layout/site-header";
 export { SidebarNav } from "@/components/layout/sidebar-nav";
 export { DocumentRow, DocumentTile } from "@/components/school/document-card";
-export { NewsRow, NewsUrgentBanner, EventCard } from "@/components/school/news-card";
+export {
+  NewsRow,
+  NewsFeatured,
+  NewsUrgentBanner,
+  EventCard,
+} from "@/components/school/news-card";
 export {
   StaffRow,
   StaffHighlight,

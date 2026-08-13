@@ -18,12 +18,12 @@ export function PageHeader({
     <header className={cn("mb-8 min-w-0", className)}>
       <Breadcrumbs items={breadcrumbs} className="mb-4" />
       {hideTitle ? null : (
-        <h1 className="break-words font-serif text-[clamp(1.75rem,3vw,2.5rem)] font-semibold leading-tight text-ink">
+        <h1 className="break-words font-serif text-[clamp(1.85rem,3.4vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.03em] text-ink">
           {title}
         </h1>
       )}
       {description ? (
-        <p className="mt-3 max-w-prose text-[17px] text-graphite">{description}</p>
+        <p className="lead mt-4 max-w-prose">{description}</p>
       ) : null}
     </header>
   );

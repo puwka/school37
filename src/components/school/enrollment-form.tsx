@@ -58,7 +58,7 @@ export function EnrollmentForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="max-w-xl space-y-5">
+    <form onSubmit={onSubmit} className="space-y-5">
       {message ? (
         <p className="rounded-[var(--radius-md)] border border-line bg-surface px-4 py-3 text-[15px] text-graphite" role="status">
           {message}

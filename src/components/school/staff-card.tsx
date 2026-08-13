@@ -24,9 +24,6 @@ export type StaffCardProps = {
   className?: string;
 };
 
-/**
- * Строка в каталоге педагогов / блок директора на главной.
- */
 function StaffRow({
   name,
   role,
@@ -39,34 +36,35 @@ function StaffRow({
     <Link
       href={href}
       className={cn(
-        "group flex items-center gap-4 border-b border-line py-4 no-underline last:border-b-0 hover:bg-paper-muted/50",
+        "group grid grid-cols-[5rem_minmax(0,1fr)] items-center gap-4 border-b border-line py-5 no-underline last:border-b-0 transition-colors duration-150 hover:bg-surface/80 sm:grid-cols-[6.5rem_minmax(0,1fr)] sm:gap-5",
         className,
       )}
     >
       {photoSrc ? (
-        <OptimizedImage
-          src={photoSrc}
-          alt={name}
-          width={56}
-          height={56}
-          className="size-14 rounded-[var(--radius-sm)] object-cover"
-          sizes="56px"
-        />
+        <div className="media-zoom relative aspect-[4/5] overflow-hidden bg-paper-muted">
+          <OptimizedImage
+            src={photoSrc}
+            alt={name}
+            fill
+            className="object-cover object-top"
+            sizes="104px"
+          />
+        </div>
       ) : (
         <div
-          className="flex size-14 items-center justify-center rounded-[var(--radius-sm)] bg-brick-tint font-sans text-sm font-medium text-brick"
+          className="flex aspect-[4/5] items-center justify-center bg-pine font-sans text-sm font-medium text-white"
           aria-hidden
         >
           {initials(name)}
         </div>
       )}
-      <div className="min-w-0 flex-1">
-        <p className="font-sans text-[15px] font-medium text-ink group-hover:text-brick">
+      <div className="min-w-0">
+        <p className="font-serif text-[1.05rem] font-semibold tracking-[-0.02em] text-ink transition-colors duration-200 group-hover:text-brick sm:text-lg">
           {name}
         </p>
-        <p className="text-sm text-graphite">{role}</p>
+        <p className="mt-1 text-[14px] leading-snug text-graphite">{role}</p>
         {subjects?.length ? (
-          <p className="mt-0.5 truncate text-sm text-muted">
+          <p className="mt-1.5 truncate text-[13px] text-muted">
             {subjects.join(", ")}
           </p>
         ) : null}
@@ -76,7 +74,7 @@ function StaffRow({
 }
 
 /**
- * Горизонтальная панель директора на главной — не grid портретов.
+ * Портрет директора на главной — фото в приоритете.
  */
 function StaffHighlight({
   name,
@@ -92,56 +90,82 @@ function StaffHighlight({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border border-line bg-surface p-5 sm:flex-row sm:items-center sm:justify-between",
+        "grid overflow-hidden border border-line bg-surface lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)]",
         className,
       )}
     >
-      <div className="flex items-center gap-4">
+      <div className="media-zoom relative min-h-[260px] bg-paper-muted sm:min-h-[300px]">
         {photoSrc ? (
           <OptimizedImage
             src={photoSrc}
             alt={name}
-            width={56}
-            height={56}
-            className="size-14 rounded-[var(--radius-sm)] object-cover"
-            sizes="56px"
+            fill
+            className="object-cover object-top"
+            sizes="(max-width: 1024px) 100vw, 420px"
             priority={priority}
           />
         ) : (
           <div
-            className="flex size-14 items-center justify-center rounded-[var(--radius-sm)] bg-brick-tint font-sans text-sm font-medium text-brick"
+            className="flex h-full min-h-[260px] items-center justify-center bg-pine font-serif text-4xl text-white"
             aria-hidden
           >
             {initials(name)}
           </div>
         )}
-        <div>
-          <p className="text-sm text-graphite">{role}</p>
-          <p className="font-serif text-xl font-semibold text-ink">{name}</p>
-          <p className="mt-1 text-sm text-graphite">
-            {[
-              receptionHours ? `Приём ${receptionHours}` : null,
-              phone,
-              email,
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
-        </div>
       </div>
-      <Link
-        href={href}
-        className="shrink-0 font-sans text-[15px] font-medium text-brick no-underline hover:underline"
-      >
-        Педагогический состав →
-      </Link>
+      <div className="flex flex-col justify-between gap-8 p-6 sm:p-8 lg:p-10">
+        <div>
+          <p className="eyebrow">{role}</p>
+          <p className="mt-3 font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-semibold tracking-[-0.03em] text-ink">
+            {name}
+          </p>
+          <dl className="mt-6 space-y-3 text-[15px]">
+            {receptionHours ? (
+              <div>
+                <dt className="text-[12px] font-medium uppercase tracking-[0.08em] text-muted">
+                  Приём
+                </dt>
+                <dd className="mt-1 text-ink">{receptionHours}</dd>
+              </div>
+            ) : null}
+            {phone ? (
+              <div>
+                <dt className="text-[12px] font-medium uppercase tracking-[0.08em] text-muted">
+                  Телефон
+                </dt>
+                <dd className="mt-1">
+                  <a href={`tel:${phone.replace(/\D/g, "")}`} className="text-ink hover:text-brick">
+                    {phone}
+                  </a>
+                </dd>
+              </div>
+            ) : null}
+            {email ? (
+              <div>
+                <dt className="text-[12px] font-medium uppercase tracking-[0.08em] text-muted">
+                  Email
+                </dt>
+                <dd className="mt-1">
+                  <a href={`mailto:${email}`} className="break-all text-ink hover:text-brick">
+                    {email}
+                  </a>
+                </dd>
+              </div>
+            ) : null}
+          </dl>
+        </div>
+        <Link
+          href={href}
+          className="inline-flex w-fit items-center gap-2 border-b border-brick pb-1 font-sans text-[14px] font-medium text-brick no-underline transition-colors hover:text-brick-hover"
+        >
+          Педагогический состав
+          <span aria-hidden>→</span>
+        </Link>
+      </div>
     </div>
   );
 }
 
-/**
- * Карточка персоны на странице профиля (приказ 1493).
- */
 function StaffProfileHeader({
   name,
   role,
@@ -150,30 +174,38 @@ function StaffProfileHeader({
   className,
 }: Omit<StaffCardProps, "href"> & { className?: string }) {
   return (
-    <header className={cn("flex flex-col gap-4 sm:flex-row sm:gap-6", className)}>
+    <header
+      className={cn(
+        "grid gap-6 border-b border-line pb-8 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8",
+        className,
+      )}
+    >
       {photoSrc ? (
-        <OptimizedImage
-          src={photoSrc}
-          alt={name}
-          width={112}
-          height={112}
-          className="size-28 rounded-[var(--radius-md)] object-cover"
-          sizes="112px"
-          priority
-        />
+        <div className="relative aspect-[4/5] w-40 overflow-hidden bg-paper-muted sm:w-full">
+          <OptimizedImage
+            src={photoSrc}
+            alt={name}
+            fill
+            className="object-cover object-top"
+            sizes="160px"
+            priority
+          />
+        </div>
       ) : (
         <div
-          className="flex size-28 items-center justify-center rounded-[var(--radius-md)] bg-brick-tint font-serif text-2xl text-brick"
+          className="flex aspect-[4/5] w-40 items-center justify-center bg-pine font-serif text-3xl text-white sm:w-full"
           aria-hidden
         >
           {initials(name)}
         </div>
       )}
-      <div>
-        <h1 className="font-serif text-3xl font-semibold text-ink">{name}</h1>
-        <p className="mt-1 text-[15px] text-graphite">{role}</p>
+      <div className="flex flex-col justify-end">
+        <h1 className="font-serif text-[clamp(1.75rem,3vw,2.5rem)] font-semibold tracking-[-0.03em] text-ink">
+          {name}
+        </h1>
+        <p className="mt-2 text-[16px] text-graphite">{role}</p>
         {subjects?.length ? (
-          <p className="mt-3 text-sm text-ink">
+          <p className="mt-4 text-sm text-ink">
             <span className="text-muted">Предметы: </span>
             {subjects.join(", ")}
           </p>

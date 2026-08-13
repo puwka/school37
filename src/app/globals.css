@@ -1,49 +1,57 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────
-   Design system: «Кирпич и бумага» — СОШ №37
-   Official school UI: paper, ink, brick accent
+   СОШ №37 — institutional editorial 2026
+   Cool stone + brick accent + pine secondary
+   No cream-template, no purple tech-slop
    ───────────────────────────────────────────── */
 
 :root {
-  /* Surfaces */
-  --paper: #f7f5f0;
-  --paper-muted: #f0ede6;
+  /* Surfaces — cool stone, not warm cream */
+  --paper: #f3f3f0;
+  --paper-muted: #eaeae6;
   --surface: #ffffff;
-  --ink: #1a1a18;
-  --graphite: #4a4a46;
-  --muted: #6b6860;
-  --line: #e3e0d8;
-  --line-strong: #cfcabe;
+  --ink: #141312;
+  --graphite: #3d3c39;
+  --muted: #6a6863;
+  --line: #dcdad4;
+  --line-strong: #c4c1b8;
 
-  /* Accent — brick of the 1963 building */
-  --brick: #9b3d32;
-  --brick-hover: #7a2f26;
-  --brick-tint: #f3ebea;
+  /* Brand — brick of the 1963 façade */
+  --brick: #8f3329;
+  --brick-hover: #6f261f;
+  --brick-tint: #f1e8e6;
+
+  /* Secondary accent — pine, for hierarchy only */
+  --pine: #1e3a34;
+  --pine-muted: #2d5249;
 
   /* Semantic */
-  --success: #2f6b4f;
-  --success-tint: #e8f1ec;
-  --warning: #8a6a1e;
-  --warning-tint: #f5efd9;
-  --danger: #9b3d32;
-  --danger-tint: #f3ebea;
+  --success: #2a5c45;
+  --success-tint: #e6f0eb;
+  --warning: #7a5c18;
+  --warning-tint: #f3edd9;
+  --danger: #8f3329;
+  --danger-tint: #f1e8e6;
 
-  /* Layout */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --content: 1120px;
-  --prose: 720px;
-  --header-h: 64px;
+  /* Layout — sharper, less “card” */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --content: 1180px;
+  --prose: 680px;
+  --header-h: 72px;
   --utility-h: 40px;
 
-  /* Shadows — almost none */
-  --shadow-xs: 0 1px 2px rgb(26 26 24 / 0.04);
-  --shadow-sm: 0 1px 3px rgb(26 26 24 / 0.06);
+  --shadow-xs: 0 1px 0 rgb(20 19 18 / 0.06);
+  --shadow-sm: 0 8px 24px rgb(20 19 18 / 0.06);
 
   --background: var(--paper);
   --foreground: var(--ink);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 160ms;
+  --dur: 320ms;
 }
 
 @theme inline {
@@ -58,6 +66,8 @@
   --color-brick: var(--brick);
   --color-brick-hover: var(--brick-hover);
   --color-brick-tint: var(--brick-tint);
+  --color-pine: var(--pine);
+  --color-pine-muted: var(--pine-muted);
   --color-success: var(--success);
   --color-success-tint: var(--success-tint);
   --color-warning: var(--warning);
@@ -67,7 +77,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --font-serif: var(--font-literata), "Georgia", serif;
+  --font-serif: var(--font-literata), "Georgia", "Times New Roman", serif;
   --font-sans: var(--font-golos), system-ui, sans-serif;
 
   --radius-sm: var(--radius-sm);
@@ -136,8 +146,9 @@
     background: var(--paper);
     color: var(--ink);
     font-family: var(--font-sans);
-    font-size: 17px;
-    line-height: 1.6;
+    font-size: 16px;
+    line-height: 1.65;
+    letter-spacing: -0.011em;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -146,21 +157,22 @@
   h3 {
     font-family: var(--font-serif);
     font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
     color: var(--ink);
   }
 
   h1 {
-    font-size: clamp(1.75rem, 2.5vw, 2.5rem);
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
   }
 
   h2 {
-    font-size: clamp(1.375rem, 2vw, 1.75rem);
+    font-size: clamp(1.5rem, 2.6vw, 2.125rem);
   }
 
   h3 {
-    font-size: clamp(1.125rem, 1.5vw, 1.25rem);
+    font-size: clamp(1.125rem, 1.6vw, 1.35rem);
+    letter-spacing: -0.02em;
   }
 
   a {
@@ -170,12 +182,12 @@
 
   :focus-visible {
     outline: 2px solid var(--brick);
-    outline-offset: 2px;
+    outline-offset: 3px;
   }
 
   ::selection {
-    background: var(--brick-tint);
-    color: var(--ink);
+    background: var(--brick);
+    color: #fff;
   }
 }
 
@@ -197,6 +209,26 @@
   }
 }
 
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @layer utilities {
   .font-serif {
     font-family: var(--font-serif);
@@ -210,7 +242,7 @@
     width: 100%;
     max-width: var(--content);
     margin-inline: auto;
-    padding-inline: clamp(1rem, 4vw, 1.5rem);
+    padding-inline: clamp(1.125rem, 4vw, 2rem);
   }
 
   .container-prose {
@@ -218,28 +250,94 @@
     max-width: var(--prose);
   }
 
-  /* Accent brick bar — marks important official blocks */
   .accent-bar {
-    border-left: 4px solid var(--brick);
+    border-left: 3px solid var(--brick);
   }
 
   .section-num::before {
     content: attr(data-num);
     display: block;
     font-family: var(--font-sans);
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     font-weight: 500;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brick);
+  }
+
+  .display {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+  }
+
+  .lead {
+    font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+    line-height: 1.65;
+    color: var(--graphite);
+  }
+
+  .hairline {
+    border-color: var(--line);
+  }
+
+  .reveal {
+    animation: rise-in var(--dur) var(--ease-out) both;
+  }
+
+  .reveal-delay-1 {
+    animation-delay: 80ms;
+  }
+
+  .reveal-delay-2 {
+    animation-delay: 160ms;
+  }
+
+  .reveal-delay-3 {
+    animation-delay: 240ms;
+  }
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0 1px;
+    transition: background-size var(--dur-fast) var(--ease-out);
+  }
+
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
+
+  .media-zoom {
+    overflow: hidden;
+  }
+
+  .media-zoom img {
+    transition: transform 700ms var(--ease-out);
+  }
+
+  .media-zoom:hover img {
+    transform: scale(1.03);
   }
 
   .animate-accordion-down {
-    animation: accordion-down 150ms ease-out;
+    animation: accordion-down 180ms var(--ease-out);
   }
 
   .animate-accordion-up {
-    animation: accordion-up 150ms ease-out;
+    animation: accordion-up 180ms var(--ease-out);
   }
 
   .skip-link {

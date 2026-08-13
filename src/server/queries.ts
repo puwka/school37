@@ -16,7 +16,15 @@ import {
 } from "@/db/schema";
 import { school as defaultSchool } from "@/data/school";
 import { documents as staticDocuments } from "@/data/documents";
-import { footerColumns, mainNav } from "@/data/navigation";
+import { news as staticNews } from "@/data/news";
+import {
+  footerColumns,
+  mainNav,
+  pedagogamNav,
+  roditelyamNav,
+  svedeniyaNav,
+  quickActions,
+} from "@/data/navigation";
 
 export type SchoolSettings = {
   fullName: string;
@@ -178,16 +186,59 @@ export const getSchool = unstable_cache(
 
 export const getSetting = unstable_cache(
   async (key: string) => {
-    const [row] = await db
-      .select()
-      .from(settings)
-      .where(eq(settings.key, key))
-      .limit(1);
-    return row?.value ?? null;
+    try {
+      const [row] = await db
+        .select()
+        .from(settings)
+        .where(eq(settings.key, key))
+        .limit(1);
+      return row?.value ?? null;
+    } catch {
+      return null;
+    }
   },
   ["cms-setting"],
   { tags: ["cms"] },
 );
+
+function staticMenuFor(location: MenuItem["location"]): MenuNode[] {
+  if (location === "header") return mainNav as MenuNode[];
+  if (location === "footer_official") {
+    return footerColumns.official.map((item) => ({ ...item }));
+  }
+  if (location === "footer_more") {
+    return footerColumns.more.map((item) => ({ ...item }));
+  }
+  if (location === "svedeniya") {
+    return svedeniyaNav.map((item) => ({
+      label: item.label,
+      href: item.href,
+      children: item.children?.map((child) => ({
+        label: child.label,
+        href: child.href,
+      })),
+    }));
+  }
+  if (location === "roditelyam") {
+    return roditelyamNav.map((item) => ({
+      label: item.label,
+      href: item.href,
+    }));
+  }
+  if (location === "pedagogam") {
+    return pedagogamNav.map((item) => ({
+      label: item.label,
+      href: item.href,
+    }));
+  }
+  if (location === "quick") {
+    return quickActions.map((item) => ({
+      label: item.label,
+      href: item.href,
+    }));
+  }
+  return [];
+}
 
 function buildMenuTree(items: MenuItem[]): MenuNode[] {
   const visible = items.filter((item) => item.isVisible);
@@ -209,12 +260,17 @@ function buildMenuTree(items: MenuItem[]): MenuNode[] {
 
 export const getMenuTree = unstable_cache(
   async (location: MenuItem["location"]): Promise<MenuNode[]> => {
-    const items = await db
-      .select()
-      .from(menuItems)
-      .where(eq(menuItems.location, location))
-      .orderBy(asc(menuItems.sortOrder));
-    return buildMenuTree(items);
+    try {
+      const items = await db
+        .select()
+        .from(menuItems)
+        .where(eq(menuItems.location, location))
+        .orderBy(asc(menuItems.sortOrder));
+      const tree = buildMenuTree(items);
+      return tree.length > 0 ? tree : staticMenuFor(location);
+    } catch {
+      return staticMenuFor(location);
+    }
   },
   ["cms-menu"],
   { tags: ["cms"] },
@@ -299,16 +355,20 @@ function mapNews(
 }
 
 async function publishedNews() {
-  const rows = await db
-    .select({
-      news,
-      categoryName: categories.name,
-    })
-    .from(news)
-    .leftJoin(categories, eq(news.categoryId, categories.id))
-    .where(eq(news.status, "published"))
-    .orderBy(desc(news.publishedAt));
-  return rows.map((row) => mapNews(row.news, row.categoryName ?? "Новость"));
+  try {
+    const rows = await db
+      .select({
+        news,
+        categoryName: categories.name,
+      })
+      .from(news)
+      .leftJoin(categories, eq(news.categoryId, categories.id))
+      .where(eq(news.status, "published"))
+      .orderBy(desc(news.publishedAt));
+    return rows.map((row) => mapNews(row.news, row.categoryName ?? "Новость"));
+  } catch {
+    return staticNews.map((item) => ({ ...item }));
+  }
 }
 
 export const getAllNews = unstable_cache(publishedNews, ["cms-news-v2"], {
@@ -323,18 +383,23 @@ export async function getNewsBySlug(slug: string) {
 /** Без кэша — баннер на главной должен обновляться сразу после правок в CMS. */
 export async function getUrgentNews() {
   unstable_noStore();
-  const [row] = await db
-    .select({
-      news,
-      categoryName: categories.name,
-    })
-    .from(news)
-    .leftJoin(categories, eq(news.categoryId, categories.id))
-    .where(and(eq(news.status, "published"), eq(news.isUrgent, true)))
-    .orderBy(desc(news.publishedAt))
-    .limit(1);
-  if (!row) return null;
-  return mapNews(row.news, row.categoryName ?? "Объявление");
+  try {
+    const [row] = await db
+      .select({
+        news,
+        categoryName: categories.name,
+      })
+      .from(news)
+      .leftJoin(categories, eq(news.categoryId, categories.id))
+      .where(and(eq(news.status, "published"), eq(news.isUrgent, true)))
+      .orderBy(desc(news.publishedAt))
+      .limit(1);
+    if (!row) return null;
+    return mapNews(row.news, row.categoryName ?? "Объявление");
+  } catch {
+    // Neon idle / ECONNRESET — не валим всю главную
+    return null;
+  }
 }
 
 export async function getLatestNews(limit = 3) {

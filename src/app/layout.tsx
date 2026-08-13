@@ -25,7 +25,7 @@ const golos = Golos_Text({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#9b3d32",
+  themeColor: "#8f3329",
 };
 
 export async function generateMetadata(): Promise<Metadata> {

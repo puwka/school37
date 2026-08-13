@@ -31,7 +31,7 @@ export interface SiteHeaderProps {
 }
 
 const navLinkClass =
-  "inline-flex h-9 shrink-0 items-center gap-1 whitespace-nowrap rounded-[var(--radius-sm)] px-2.5 font-sans text-[14px] font-medium text-graphite no-underline transition-colors hover:bg-paper-muted hover:text-ink lg:h-10 lg:px-3 lg:text-[15px]";
+  "relative inline-flex h-10 shrink-0 items-center gap-1 whitespace-nowrap px-2.5 font-sans text-[13px] font-medium tracking-[-0.01em] text-graphite no-underline transition-colors duration-150 hover:text-ink xl:px-3 xl:text-[14px]";
 
 function MainNav({
   items,
@@ -53,6 +53,16 @@ function MainNav({
     <nav className={className} aria-label="Главное меню">
       {items.map((item) => {
         const active = isActive(item);
+        const activeMark = (
+          <span
+            className={cn(
+              "pointer-events-none absolute inset-x-2.5 -bottom-px h-[2px] origin-left bg-brick transition-transform duration-200",
+              active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
+            )}
+            aria-hidden
+          />
+        );
+
         if (item.children?.length) {
           return (
             <Dropdown key={item.href}>
@@ -60,18 +70,26 @@ function MainNav({
                 <button
                   type="button"
                   className={cn(
+                    "group",
                     navLinkClass,
-                    active && "bg-brick-tint/60 text-ink",
+                    active && "text-ink",
                   )}
                 >
                   {item.label}
-                  <ChevronDown className="size-3.5 shrink-0 opacity-60" aria-hidden />
+                  <ChevronDown
+                    className="size-3.5 shrink-0 opacity-50 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                    aria-hidden
+                  />
+                  {activeMark}
                 </button>
               </DropdownTrigger>
-              <DropdownContent align="start">
+              <DropdownContent align="start" className="min-w-[15rem] p-1.5">
                 <DropdownItem asChild>
-                  <Link href={item.href}>{item.label} — обзор</Link>
+                  <Link href={item.href} className="font-medium">
+                    {item.label} — обзор
+                  </Link>
                 </DropdownItem>
+                <div className="my-1.5 h-px bg-line" />
                 {item.children.map((child) => (
                   <DropdownItem key={child.href} asChild>
                     <Link href={child.href}>{child.label}</Link>
@@ -81,13 +99,15 @@ function MainNav({
             </Dropdown>
           );
         }
+
         return (
           <Link
             key={item.href}
             href={item.href}
-            className={cn(navLinkClass, active && "bg-brick-tint/60 text-ink")}
+            className={cn("group", navLinkClass, active && "text-ink")}
           >
             {item.label}
+            {activeMark}
           </Link>
         );
       })}
@@ -106,6 +126,14 @@ function SiteHeader({
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
+  const [scrolled, setScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   function submitSearch() {
     const q = query.trim();
@@ -115,18 +143,30 @@ function SiteHeader({
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-surface">
+    <header
+      className={cn(
+        "sticky top-0 z-40 border-b bg-surface/92 backdrop-blur-md transition-[border-color,box-shadow] duration-200",
+        scrolled
+          ? "border-line shadow-[0_1px_0_rgb(20_19_18/0.04)]"
+          : "border-transparent",
+      )}
+    >
       <div className="container-site">
-        {/* Верхняя строка: логотип и утилиты — отдельно от меню */}
-        <div className="flex h-14 items-center justify-between gap-4">
+        <div className="flex h-[3.75rem] items-center gap-4 lg:h-16">
           <Link
             href={logoHref}
-            className="shrink-0 font-serif text-base font-semibold tracking-tight whitespace-nowrap text-ink no-underline sm:text-lg"
+            className="shrink-0 font-serif text-[1.05rem] font-semibold tracking-[-0.03em] text-ink no-underline sm:text-lg"
           >
             {title}
           </Link>
 
-          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <MainNav
+            items={items}
+            currentPath={currentPath}
+            className="ml-2 hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex xl:gap-1"
+          />
+
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
             {showSearch ? (
               <>
                 <Button
@@ -139,7 +179,7 @@ function SiteHeader({
                 >
                   <SearchIcon className="size-5" />
                 </Button>
-                <div className="hidden w-40 shrink-0 lg:block xl:w-44">
+                <div className="hidden w-36 shrink-0 lg:block xl:w-44">
                   <Search
                     appearance="compact"
                     className="!max-w-none w-full"
@@ -164,16 +204,20 @@ function SiteHeader({
                 variant="ghost"
                 size="sm"
                 onClick={onVisuallyImpaired}
-                className="hidden whitespace-nowrap lg:inline-flex"
+                className="hidden whitespace-nowrap xl:inline-flex"
                 aria-pressed={false}
                 aria-label="Версия для слабовидящих"
               >
-                <span className="hidden xl:inline">Версия для слабовидящих</span>
-                <span className="xl:hidden" aria-hidden>
-                  А+
-                </span>
+                А+
               </Button>
             ) : null}
+            <Button
+              asChild
+              size="sm"
+              className="hidden sm:inline-flex"
+            >
+              <Link href="/roditelyam/zayavka/">Заявка</Link>
+            </Button>
             <Button
               type="button"
               variant="ghost"
@@ -188,23 +232,19 @@ function SiteHeader({
             </Button>
           </div>
         </div>
-
-        {/* Нижняя строка: меню на всю ширину */}
-        <MainNav
-          items={items}
-          currentPath={currentPath}
-          className="hidden flex-wrap items-center gap-x-0.5 gap-y-1 border-t border-line py-1.5 lg:flex"
-        />
       </div>
 
       {open ? (
-        <div id="mobile-nav" className="border-t border-line bg-surface lg:hidden">
-          <nav className="container-site flex flex-col py-3" aria-label="Мобильное меню">
+        <div
+          id="mobile-nav"
+          className="max-h-[min(80vh,640px)] overflow-y-auto border-t border-line bg-surface lg:hidden"
+        >
+          <nav className="container-site flex flex-col py-2" aria-label="Мобильное меню">
             {items.map((item) => (
               <div key={item.href} className="border-b border-line last:border-0">
                 <Link
                   href={item.href}
-                  className="block py-3 font-sans text-[15px] font-medium text-ink no-underline"
+                  className="block py-3.5 font-sans text-[15px] font-medium tracking-[-0.01em] text-ink no-underline"
                   onClick={() => setOpen(false)}
                 >
                   {item.label}
@@ -213,7 +253,7 @@ function SiteHeader({
                   <Link
                     key={child.href}
                     href={child.href}
-                    className="block py-2 pl-4 font-sans text-sm text-graphite no-underline"
+                    className="block py-2.5 pl-3 font-sans text-sm text-graphite no-underline"
                     onClick={() => setOpen(false)}
                   >
                     {child.label}
@@ -221,6 +261,13 @@ function SiteHeader({
                 ))}
               </div>
             ))}
+            <Link
+              href="/roditelyam/zayavka/"
+              className="mt-3 mb-2 inline-flex h-11 items-center justify-center bg-brick px-4 font-sans text-[15px] font-medium text-white no-underline"
+              onClick={() => setOpen(false)}
+            >
+              Подать заявку
+            </Link>
             {showSearch ? (
               <Link
                 href="/poisk/"
@@ -249,7 +296,7 @@ function SiteHeader({
   );
 }
 
-/** Компактные быстрые действия на главной — не карточки */
+/** Компактные быстрые действия — полоса ссылок, не карточки */
 export function QuickNav({
   items,
   className,
@@ -261,18 +308,20 @@ export function QuickNav({
     <nav
       aria-label="Быстрые действия"
       className={cn(
-        "flex flex-wrap border border-line bg-surface",
+        "flex flex-wrap divide-y divide-line border-y border-line sm:divide-x sm:divide-y-0",
         className,
       )}
     >
-      {items.map((item, index) => {
+      {items.map((item) => {
         const external = item.href.startsWith("http");
-        const classNameItem = cn(
-          "group flex min-h-[72px] min-w-0 flex-1 basis-[140px] items-center border-line px-4 py-3 font-sans text-[15px] font-medium text-ink no-underline transition-colors hover:bg-paper-muted sm:px-5",
-          index > 0 && "border-t sm:border-t-0 sm:border-l",
-        );
+        const classNameItem =
+          "group flex min-h-[4.5rem] min-w-0 flex-1 basis-[140px] items-center px-4 py-3 font-sans text-[14px] font-medium tracking-[-0.01em] text-ink no-underline transition-colors duration-150 hover:bg-surface sm:px-5";
         const label = (
-          <span className="border-l-2 border-transparent transition-all group-hover:border-brick group-hover:pl-2">
+          <span className="relative pl-0 transition-[padding] duration-200 group-hover:pl-2">
+            <span
+              className="absolute left-0 top-1/2 h-3 w-[2px] -translate-y-1/2 scale-y-0 bg-brick transition-transform duration-200 group-hover:scale-y-100"
+              aria-hidden
+            />
             {item.label}
           </span>
         );
