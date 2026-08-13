@@ -9,22 +9,26 @@ async function main() {
     return;
   }
 
-  const sql = postgres(url, { max: 1, prepare: false, connect_timeout: 15 });
+  const sql = postgres(url, { max: 1, prepare: false, connect_timeout: 30 });
+  let needsSeed = false;
   try {
     const rows = await sql<{ exists: boolean }[]>`
       select exists(
         select 1 from settings where key = 'school' limit 1
       ) as exists
     `;
-    if (rows[0]?.exists) {
+    needsSeed = !rows[0]?.exists;
+    if (!needsSeed) {
       console.log("База уже заполнена — seed пропущен.");
-      return;
     }
-    console.log("База пустая — запуск seed…");
-    await runSeed();
   } finally {
     await sql.end({ timeout: 5 });
   }
+
+  if (!needsSeed) return;
+
+  console.log("База пустая — первичное заполнение…");
+  await runSeed({ skipTruncate: true });
 }
 
 main().catch((error) => {

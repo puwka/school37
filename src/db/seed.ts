@@ -40,7 +40,12 @@ if (!url) {
   throw new Error("DATABASE_URL не задан");
 }
 
-const sql = postgres(url, { max: 1 });
+const sql = postgres(url, {
+  max: 1,
+  prepare: false,
+  connect_timeout: 30,
+  idle_timeout: 20,
+});
 const db = drizzle(sql);
 
 type Block = {
@@ -750,13 +755,19 @@ const pageSeeds: PageSeed[] = [
   },
 ];
 
-async function seed() {
-  console.log("Очистка таблиц…");
-  await sql`truncate table
-    audit_logs, redirects, settings, menu_items, page_blocks, pages,
-    documents, news, employees, media, categories, users
-    restart identity cascade`;
+async function seed(options: { skipTruncate?: boolean } = {}) {
+  if (options.skipTruncate) {
+    console.log("Пропуск очистки — первичное заполнение пустой базы.");
+  } else {
+    console.log("Очистка таблиц…");
+    await sql`truncate table
+      audit_logs, redirects, settings, menu_items, page_blocks, pages,
+      documents, news, employees, media, categories, users
+      restart identity cascade`;
+    console.log("Таблицы очищены.");
+  }
 
+  console.log("Создание администратора…");
   const email = (process.env.CMS_ADMIN_EMAIL ?? "admin@school37.local").toLowerCase();
   const password = process.env.CMS_ADMIN_PASSWORD ?? "changeme";
   const [admin] = await db
