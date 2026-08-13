@@ -19,6 +19,7 @@ import { TextLink } from "@/components/layout/content";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { NewsRow, NewsUrgentBanner } from "@/components/school/news-card";
 import { StaffHighlight } from "@/components/school/staff-card";
+import { EnrollmentForm } from "@/components/school/enrollment-form";
 import { buildPageMetadata } from "@/lib/seo";
 import {
   getAnnouncements,
@@ -106,7 +107,7 @@ export default async function HomePage() {
               <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[15px]">
                 <TextLink href="/o-shkole/">О школе</TextLink>
                 <TextLink href="/roditelyam/priem/">Поступление</TextLink>
-                <TextLink href="/roditelyam/zayavka/">Заявка в школу</TextLink>
+                <TextLink href="#zayavka">Заявка в школу</TextLink>
                 <TextLink href="/svedeniya/dokumenty/">Документы</TextLink>
               </div>
             </div>
@@ -158,6 +159,37 @@ export default async function HomePage() {
               <p className="mt-2">
                 <TextLink href="/kontakty/">Контакты и карта →</TextLink>
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="zayavka"
+        className="border-b border-line bg-paper-muted/30"
+        aria-labelledby="enrollment-title"
+      >
+        <div className="container-site py-10 md:py-12">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
+            <div className="min-w-0">
+              <h2
+                id="enrollment-title"
+                className="font-serif text-2xl font-semibold text-ink"
+              >
+                Заявка в школу
+              </h2>
+              <p className="mt-3 max-w-prose text-[17px] leading-relaxed text-graphite">
+                Заполните форму — заявка поступит в администрацию. Мы свяжемся с
+                вами по указанному телефону.
+              </p>
+              <p className="mt-4 text-[15px]">
+                <TextLink href="/roditelyam/priem/">
+                  Условия поступления и закреплённая территория →
+                </TextLink>
+              </p>
+            </div>
+            <div className="min-w-0 border border-line bg-surface p-6 md:p-8">
+              <EnrollmentForm />
             </div>
           </div>
         </div>
