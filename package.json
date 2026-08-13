@@ -12,6 +12,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx src/db/seed.ts",
     "db:seed-if-empty": "tsx src/db/seed-if-empty.ts",
+    "db:sync-uploads": "tsx src/db/sync-uploads.ts",
     "db:reset": "drizzle-kit migrate && tsx src/db/seed.ts",
     "db:studio": "drizzle-kit studio",
     "db:deploy": "drizzle-kit migrate"

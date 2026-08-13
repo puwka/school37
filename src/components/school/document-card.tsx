@@ -63,7 +63,8 @@ function DocumentRow({
     return (
       <a
         href={href}
-        download
+        target="_blank"
+        rel="noopener noreferrer"
         className={cn(
           "group flex items-start gap-3 border-b border-line py-3.5 no-underline transition-colors last:border-b-0 hover:bg-paper-muted/60",
           className,

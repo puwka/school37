@@ -15,6 +15,7 @@ import {
   type MenuItem,
 } from "@/db/schema";
 import { school as defaultSchool } from "@/data/school";
+import { documents as staticDocuments } from "@/data/documents";
 import { footerColumns, mainNav } from "@/data/navigation";
 
 export type SchoolSettings = {
@@ -100,6 +101,10 @@ export type PublicDocument = {
   href?: string;
   downloadable: boolean;
 };
+
+const documentHrefBySlug = new Map(
+  staticDocuments.filter((item) => item.href).map((item) => [item.slug, item.href!]),
+);
 
 export type PublicEmployee = {
   slug: string;
@@ -364,16 +369,19 @@ export const getAllDocuments = unstable_cache(
       .leftJoin(media, eq(documents.fileId, media.id))
       .where(eq(documents.status, "published"))
       .orderBy(asc(documents.title));
-    return rows.map((row) => ({
-      slug: row.document.slug,
-      title: row.document.title,
-      category: row.categoryName ?? "Документы",
-      date: row.document.documentDate ?? undefined,
-      sizeLabel: row.document.sizeLabel ?? undefined,
-      signed: row.document.isSigned || undefined,
-      href: row.fileUrl ?? undefined,
-      downloadable: Boolean(row.fileUrl),
-    }));
+    return rows.map((row) => {
+      const href = row.fileUrl ?? documentHrefBySlug.get(row.document.slug);
+      return {
+        slug: row.document.slug,
+        title: row.document.title,
+        category: row.categoryName ?? "Документы",
+        date: row.document.documentDate ?? undefined,
+        sizeLabel: row.document.sizeLabel ?? undefined,
+        signed: row.document.isSigned || undefined,
+        href,
+        downloadable: Boolean(href),
+      };
+    });
   },
   ["cms-documents"],
   { tags: ["cms"] },

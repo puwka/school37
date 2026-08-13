@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminChrome } from "@/components/admin/admin-chrome";
 import type { Document } from "@/db/schema";
+import { documents as staticDocuments } from "@/data/documents";
 import { getSession } from "@/server/auth";
 import { listDocumentsAdmin } from "@/server/crud";
 
@@ -17,6 +18,9 @@ export default async function AdminDocumentsPage() {
 
   const result = await listDocumentsAdmin({ page: 1, perPage: 100 });
   const items = result.items as Document[];
+  const staticHrefBySlug = new Set(
+    staticDocuments.filter((doc) => doc.href).map((doc) => doc.slug),
+  );
 
   return (
     <AdminChrome userName={session.name}>
@@ -55,7 +59,9 @@ export default async function AdminDocumentsPage() {
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-graphite">
-                    {item.fileId ? "Прикреплён" : "—"}
+                    {item.fileId || staticHrefBySlug.has(item.slug)
+                      ? "Прикреплён"
+                      : "—"}
                   </td>
                   <td className="px-4 py-3 text-muted">{statusLabel(item.status)}</td>
                 </tr>
