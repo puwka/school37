@@ -14,7 +14,8 @@ import {
   settings,
   type MenuItem,
 } from "@/db/schema";
-import { notFound } from "@/server/errors";
+import { school as defaultSchool } from "@/data/school";
+import { footerColumns, mainNav } from "@/data/navigation";
 
 export type SchoolSettings = {
   fullName: string;
@@ -154,17 +155,19 @@ function isoDate(value: Date | null) {
 
 export const getSchool = unstable_cache(
   async (): Promise<SchoolSettings> => {
-    const [row] = await db
-      .select()
-      .from(settings)
-      .where(eq(settings.key, "school"))
-      .limit(1);
-    if (!row) {
-      throw notFound("Настройка school не найдена. Выполните npm run db:seed.");
+    try {
+      const [row] = await db
+        .select()
+        .from(settings)
+        .where(eq(settings.key, "school"))
+        .limit(1);
+      if (row) return row.value as SchoolSettings;
+    } catch {
+      // Fallback при пустой БД или недоступности во время сборки
     }
-    return row.value as SchoolSettings;
+    return defaultSchool as unknown as SchoolSettings;
   },
-  ["cms-school"],
+  ["cms-school-v2"],
   { tags: ["cms"] },
 );
 
@@ -456,12 +459,16 @@ export const getSiteChrome = unstable_cache(
     ]);
     return {
       school,
-      header,
-      footerOfficial,
-      footerMore,
+      header: header.length > 0 ? header : mainNav,
+      footerOfficial:
+        footerOfficial.length > 0
+          ? footerOfficial
+          : [...footerColumns.official],
+      footerMore:
+        footerMore.length > 0 ? footerMore : [...footerColumns.more],
     };
   },
-  ["cms-chrome"],
+  ["cms-chrome-v2"],
   { tags: ["cms"] },
 );
 

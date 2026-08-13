@@ -1065,8 +1065,16 @@ async function seed() {
   await sql.end({ timeout: 5 });
 }
 
-seed().catch(async (error) => {
-  console.error(error);
-  await sql.end({ timeout: 5 });
-  process.exit(1);
-});
+export { seed as runSeed };
+
+const isDirectRun =
+  typeof process.argv[1] === "string" &&
+  process.argv[1].replace(/\\/g, "/").endsWith("src/db/seed.ts");
+
+if (isDirectRun) {
+  seed().catch(async (error) => {
+    console.error(error);
+    await sql.end({ timeout: 5 });
+    process.exit(1);
+  });
+}

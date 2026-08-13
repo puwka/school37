@@ -42,8 +42,8 @@ git push -u origin main
 1. https://vercel.com/new → Import Git Repository
 2. Выберите репозиторий `school37`
 3. **Framework Preset:** Next.js (определится автоматически)
-4. **Build Command** (из `vercel.json`): `npm run db:migrate && npm run build`
-5. **Environment Variables** — добавьте:
+4. **Build Command** (из `vercel.json`): `npm run db:migrate && npm run db:seed-if-empty && npm run build`
+5. **Environment Variables** — добавьте (все обязательны для первого деплоя):
 
 | Переменная | Значение |
 |------------|----------|
@@ -55,25 +55,20 @@ git push -u origin main
 
 6. Deploy
 
-При первом деплое Vercel выполнит миграции (`drizzle/`) автоматически.
+При первом деплое: **migrate → seed (если БД пустая) → build**.
 
 ---
 
-## Шаг 4. Заполнение базы (seed)
+## Шаг 4. Seed (обычно не нужен вручную)
 
-Seed **не** запускается при деплое — один раз выполните локально, указав production `DATABASE_URL`:
+При **первом** деплое seed запускается автоматически (`db:seed-if-empty`), если таблица `settings` пустая.
+
+Ручной seed (сброс всех данных):
 
 ```powershell
 $env:DATABASE_URL="postgres://...neon...?sslmode=require"
-$env:CMS_ADMIN_EMAIL="admin@school37.local"
-$env:CMS_ADMIN_PASSWORD="ваш-пароль"
-
 npm run db:seed
 ```
-
-Это создаст страницы, новости, документы, сотрудников и админа.
-
-> **Внимание:** `db:seed` очищает все таблицы (TRUNCATE). Запускайте только при первом деплое или полном сбросе.
 
 ---
 
