@@ -112,8 +112,8 @@ export default async function HomePage() {
 
             <figure className="relative min-w-0 overflow-hidden border border-line bg-paper-muted">
               <OptimizedImage
-                src="/uploads/images/mto-avgust.jpg"
-                alt="Школьное здание и образовательная среда МОАУ СОШ №37"
+                src="/uploads/images/school.jpg"
+                alt="Здание МОАУ СОШ №37 г. Орска"
                 width={720}
                 height={480}
                 className="aspect-[3/2] w-full object-cover"
