@@ -56,7 +56,7 @@ function MainNav({
         const activeMark = (
           <span
             className={cn(
-              "pointer-events-none absolute inset-x-2.5 -bottom-px h-[2px] origin-left bg-brick transition-transform duration-200",
+              "pointer-events-none absolute inset-x-2.5 bottom-0 h-[2px] origin-left bg-brick transition-transform duration-200",
               active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
             )}
             aria-hidden
@@ -69,11 +69,7 @@ function MainNav({
               <DropdownTrigger asChild>
                 <button
                   type="button"
-                  className={cn(
-                    "group",
-                    navLinkClass,
-                    active && "text-ink",
-                  )}
+                  className={cn("group", navLinkClass, active && "text-ink")}
                 >
                   {item.label}
                   <ChevronDown
@@ -145,28 +141,21 @@ function SiteHeader({
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b bg-surface/92 backdrop-blur-md transition-[border-color,box-shadow] duration-200",
-        scrolled
-          ? "border-line shadow-[0_1px_0_rgb(20_19_18/0.04)]"
-          : "border-transparent",
+        "sticky top-0 z-40 border-b bg-surface/95 backdrop-blur-md transition-[border-color,box-shadow] duration-200",
+        scrolled ? "border-line shadow-[var(--shadow-xs)]" : "border-line",
       )}
     >
       <div className="container-site">
-        <div className="flex h-[3.75rem] items-center gap-4 lg:h-16">
+        {/* Строка 1: бренд + утилиты — меню отдельно, без наложений */}
+        <div className="flex h-14 items-center justify-between gap-4 lg:h-[3.75rem]">
           <Link
             href={logoHref}
-            className="shrink-0 font-serif text-[1.05rem] font-semibold tracking-[-0.03em] text-ink no-underline sm:text-lg"
+            className="relative z-10 shrink-0 font-serif text-[1.05rem] font-semibold tracking-[-0.03em] text-ink no-underline sm:text-lg"
           >
             {title}
           </Link>
 
-          <MainNav
-            items={items}
-            currentPath={currentPath}
-            className="ml-2 hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex xl:gap-1"
-          />
-
-          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <div className="relative z-10 flex shrink-0 items-center gap-1.5 sm:gap-2">
             {showSearch ? (
               <>
                 <Button
@@ -179,7 +168,7 @@ function SiteHeader({
                 >
                   <SearchIcon className="size-5" />
                 </Button>
-                <div className="hidden w-36 shrink-0 lg:block xl:w-44">
+                <div className="hidden w-40 shrink-0 lg:block xl:w-48">
                   <Search
                     appearance="compact"
                     className="!max-w-none w-full"
@@ -204,18 +193,14 @@ function SiteHeader({
                 variant="ghost"
                 size="sm"
                 onClick={onVisuallyImpaired}
-                className="hidden whitespace-nowrap xl:inline-flex"
+                className="hidden whitespace-nowrap lg:inline-flex"
                 aria-pressed={false}
                 aria-label="Версия для слабовидящих"
               >
                 А+
               </Button>
             ) : null}
-            <Button
-              asChild
-              size="sm"
-              className="hidden sm:inline-flex"
-            >
+            <Button asChild size="sm" className="hidden sm:inline-flex">
               <Link href="/roditelyam/zayavka/">Заявка</Link>
             </Button>
             <Button
@@ -232,6 +217,13 @@ function SiteHeader({
             </Button>
           </div>
         </div>
+
+        {/* Строка 2: меню на всю ширину */}
+        <MainNav
+          items={items}
+          currentPath={currentPath}
+          className="hidden flex-wrap items-center gap-x-0.5 gap-y-0 border-t border-line py-1 lg:flex"
+        />
       </div>
 
       {open ? (
@@ -239,7 +231,10 @@ function SiteHeader({
           id="mobile-nav"
           className="max-h-[min(80vh,640px)] overflow-y-auto border-t border-line bg-surface lg:hidden"
         >
-          <nav className="container-site flex flex-col py-2" aria-label="Мобильное меню">
+          <nav
+            className="container-site flex flex-col py-2"
+            aria-label="Мобильное меню"
+          >
             {items.map((item) => (
               <div key={item.href} className="border-b border-line last:border-0">
                 <Link
